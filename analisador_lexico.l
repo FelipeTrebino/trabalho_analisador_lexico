@@ -47,8 +47,8 @@ STRING \"(\\.|[^"\\])*\"
 %option noyywrap
 
 %%
-int       { printf("<int> "); add_identifier(yytext, "int"); }
-float     { printf("<float> "); add_identifier(yytext, "float"); }
+int       { printf("<int> "); }
+float     { printf("<float> "); }
 void      { printf("<void> "); }
 public    { printf("<public> "); }
 static    { printf("<static> "); }
@@ -62,9 +62,9 @@ printf     { printf("<printf> "); }
 "="       { printf("<= > "); }
 "=="      { printf("<==> "); }
 "<"       { printf("<< > "); }
-"<="      { printf("< <= > "); }
-">"       { printf("> > "); }
-">="      { printf("< >= > "); }
+"<="      { printf("<<= > "); }
+">"       { printf("<> > "); }
+">="      { printf("<>= > "); }
 "!="      { printf("<!= > "); }
 "+"       { printf("<+> "); }
 "-"       { printf("<-> "); }

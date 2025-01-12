@@ -1,5 +1,6 @@
-public static void main(String [] args){
-    int a = 10, b = 4;
-    float c = a / b;
-    System.Out.Print(c);
+int main() {
+    int largura = 5, altura = 3, area;
+    area = largura * altura;
+    printf("%d\n",area);
+    return 0;
 }

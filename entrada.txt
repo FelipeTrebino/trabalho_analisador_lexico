@@ -1,0 +1,43 @@
+// Declaração de variáveis inteiras e de ponto flutuante
+int a = 10;
+float b = 3.14;
+int vetor[5] = {1, 2, 3, 4, 5};
+
+/ Atribuição e expressão aritmética
+a = a + 5;
+b = b * 2.0;
+
+// Acesso a elementos do vetor
+int x = vetor[2];
+vetor[3] = a + 1;
+
+// Desvio condicional
+if (a > b) {
+    printf("a é maior que b\n");
+} else {
+    printf("b é maior ou igual a a\n");
+}
+
+// Comando de repetição
+while (x < 20) {
+    x = x + 2;
+    printf("Valor de x: %d\n", x);
+}
+
+// Função com parâmetros e retorno
+float soma(float x, float y) {
+    return x + y;
+}
+
+// Chamando a função
+float resultado = soma(1.5, 2.5);
+printf("Resultado da soma: %.2f\n", resultado);
+
+// Comparações e operadores lógicos
+if (x != a && b >= 3.0) {
+    printf("Condição atendida\n");
+}
+
+// String
+char texto[] = "Teste de string";
+printf("%s\n", texto);

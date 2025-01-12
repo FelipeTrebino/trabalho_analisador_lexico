@@ -7,6 +7,7 @@
 typedef struct {
     char id[100];
     char type[10];
+    int size;  // Armazena o tamanho do vetor (se aplicável)
 } Identifier;
 
 Identifier identifiers[100];
@@ -22,18 +23,28 @@ int find_identifier(char *id) {
     return -1;
 }
 
-// Função para adicionar um identificador na tabela de símbolos
-int add_identifier(char *id, char *type) {
+// Função para adicionar uma variável simples na tabela de símbolos
+void add_variable(char *id, char *type) {
     int idx = find_identifier(id);
     if (idx == -1) {
         strcpy(identifiers[identifier_count].id, id);
         strcpy(identifiers[identifier_count].type, type);
+        identifiers[identifier_count].size = 0;
         identifier_count++;
         printf("<id, %d> ", identifier_count);
-        return identifier_count - 1;
     } else {
         printf("<id, %d> ", idx + 1);
-        return idx;
+    }
+}
+
+// Função para adicionar um vetor na tabela de símbolos
+void add_vector(char *id, char *type, int size) {
+    if (find_identifier(id) == -1) {
+        strcpy(identifiers[identifier_count].id, id);
+        strcpy(identifiers[identifier_count].type, type);
+        identifiers[identifier_count].size = size;
+        identifier_count++;
+        printf("<vetor_decl, %s, %d> ", id, size);
     }
 }
 %}
@@ -58,8 +69,10 @@ else      { printf("<else> "); }
 for       { printf("<for> "); }
 while     { printf("<while> "); }
 return    { printf("<return> "); }
-printf     { printf("<printf> "); }
+printf    { printf("<printf> "); }
 "="       { printf("<= > "); }
+"&&"       { printf("<&&> "); }
+"||"       { printf("<||> "); }
 "=="      { printf("<==> "); }
 "<"       { printf("<< > "); }
 "<="      { printf("<<= > "); }
@@ -79,9 +92,25 @@ printf     { printf("<printf> "); }
 ","       { printf("<,> "); }
 ";"       { printf("<;> "); }
 
+
+(int|float)[ ]+{ID}\[{DIGIT}\] { 
+    char var_name[100];
+    int size;
+    printf("<int> "); 
+    sscanf(yytext, "%*s %[^[[][%d]", var_name, &size);
+    add_vector(var_name, "vetor", size);
+}
+
+{ID}\[{DIGIT}\] { 
+    char var_name[100];
+    int index;
+    sscanf(yytext, "%[^[[][%d]", var_name, &index);
+    printf("<vetor_acesso, %s, %d> ", var_name, index);
+}
+
 {DIGIT}          { printf("<num, %s> ", yytext); }
 {FLOAT}          { printf("<num, %s> ", yytext); }
-{ID}             { add_identifier(yytext, "unknown"); }
+{ID}             { add_variable(yytext, "unknown"); }
 {STRING}         { printf("<str, %s> ", yytext); }
 
 "//".*           { /* Ignora comentários de linha única */ }

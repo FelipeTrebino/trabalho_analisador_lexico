@@ -1,15 +1,15 @@
 // Declaração de variáveis inteiras e de ponto flutuante
 int a = 10;
 float b = 3.14;
-int vetor[5] = {1, 2, 3, 4, 5};
+int vetorn[5] = {1, 2, 3, 4, 5};
 
 // Atribuição e expressão aritmética
 a = a + 5;
 b = b * 2.0;
 
 // Acesso a elementos do vetor
-int x = vetor[2];
-vetor[3] = a + 1;
+int x = vetorn[2];
+vetorn[3] = a + 1;
 
 // Desvio condicional
 if (a > b) {

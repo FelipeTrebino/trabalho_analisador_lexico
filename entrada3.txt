@@ -1,7 +1,10 @@
-// Função com parâmetros e retorno
-float soma(float x, float y) {
+// Declaração de função
+int soma(int x, int y) {
     return x + y;
 }
 
-// Chamando a função
-float resultado = soma(1.5, 2.5);
+// Chamada de função
+int resultado = soma(a, b);
+
+// Erro de chamada
+soma(a);

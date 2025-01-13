@@ -10,8 +10,19 @@ typedef struct {
     int size;  // Armazena o tamanho do vetor (se aplicável)
 } Identifier;
 
+// Estrutura para armazenar funções na tabela de símbolos
+typedef struct {
+    char name[100];
+    char return_type[10];
+    int param_count;
+    Identifier parameters[10]; // Parâmetros da função
+} Function;
+
 Identifier identifiers[100];
 int identifier_count = 0;
+
+Function functions[100];
+int function_count = 0;
 
 // Arquivo de saída
 FILE *output_file;
@@ -20,6 +31,16 @@ FILE *output_file;
 int find_identifier(char *id) {
     for (int i = 0; i < identifier_count; i++) {
         if (strcmp(identifiers[i].id, id) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Função para encontrar uma função na tabela de símbolos
+int find_function(char *name) {
+    for (int i = 0; i < function_count; i++) {
+        if (strcmp(functions[i].name, name) == 0) {
             return i;
         }
     }
@@ -40,6 +61,57 @@ void add_variable(char *id, char *type) {
     }
 }
 
+void add_function(char *name, char *return_type, int param_count, Identifier parameters[]) {
+    // Verificar se a função já existe
+    int idx = find_function(name);
+    if (idx != -1) {
+        fprintf(output_file, "<error, function_already_declared, %s> ", name);
+        return;
+    }
+
+    // Armazenar nome e tipo de retorno
+    strcpy(functions[function_count].name, name);
+    strcpy(functions[function_count].return_type, return_type);
+
+    // Validar e armazenar parâmetros
+    functions[function_count].param_count = 0; // Inicializa o contador de parâmetros
+    for (int i = 0; i < param_count; i++) {
+        // Armazenar o parâmetro
+        strcpy(functions[function_count].parameters[functions[function_count].param_count].id, parameters[i].id);
+        strcpy(functions[function_count].parameters[functions[function_count].param_count].type, parameters[i].type);
+        functions[function_count].parameters[functions[function_count].param_count].size = 0;
+        functions[function_count].param_count++;
+    }
+
+    // Incrementar o contador de funções
+    function_count++;
+
+    // Informar a declaração da função
+    fprintf(output_file, "<function_decl, %s, %s, %d params> ", name, return_type, param_count);
+}
+
+
+
+
+// Função para verificar os parâmetros de uma chamada de função
+void validate_function_call(Function *func, int passed_param_count, char passed_params[][10]) {
+    if (func->param_count != passed_param_count) {
+        fprintf(output_file, "<error, wrong_param_count, expected %d, got %d> ", func->param_count, passed_param_count);
+        return;
+    }
+
+    for (int i = 0; i < passed_param_count; i++) {
+        // Verifica se o identificador do parâmetro esperado é válido
+        if (strlen(func->parameters[i].id) == 0) {
+            fprintf(output_file, "<error, undefined_param, position %d> ", i + 1);
+            continue;
+        }
+
+        fprintf(output_file, "<param_match, %s -> %s> ", passed_params[i], func->parameters[i].id);
+    }
+}
+
+
 // Função para adicionar um vetor na tabela de símbolos
 void add_vector(char *id, char *type, int size) {
     if (find_identifier(id) == -1) {
@@ -50,13 +122,14 @@ void add_vector(char *id, char *type, int size) {
         fprintf(output_file, "<vetor_decl, %s, %d> ", id, size);
     }
 }
+
 %}
 
 DIGIT [0-9]+
 ID [a-zA-Z_][a-zA-Z0-9]*
 FLOAT [0-9]+\.[0-9]+
 WHITESPACE [ \t\n]+
-STRING \"(\\.|[^"\\])*\"
+STRING \"(\\.|[^\"\\])*\"
 
 %option noyywrap
 
@@ -80,10 +153,10 @@ do        { fprintf(output_file, "<do> "); }
 typedef   { fprintf(output_file, "<typedef> "); }
 struct    { fprintf(output_file, "<struct> "); }
 return    { fprintf(output_file, "<return> "); }
-printf    { fprintf(output_file, "<printf> "); } 
-scanf     { fprintf(output_file, "<scanf> "); } 
-define    { fprintf(output_file, "<define> "); } 
-exit      { fprintf(output_file, "<exit> "); } 
+printf    { fprintf(output_file, "<printf> "); }
+scanf     { fprintf(output_file, "<scanf> "); }
+define    { fprintf(output_file, "<define> "); }
+exit      { fprintf(output_file, "<exit> "); }
 "="       { fprintf(output_file, "<= > "); }
 "&&"      { fprintf(output_file, "<&&> "); }
 "||"      { fprintf(output_file, "<||> "); }
@@ -105,7 +178,7 @@ exit      { fprintf(output_file, "<exit> "); }
 "}"       { fprintf(output_file, "<}> "); }
 ","       { fprintf(output_file, "<,> "); }
 ";"       { fprintf(output_file, "<;> "); }
-"%"       { fprintf(output_file, "<%%> "); } 
+"%"       { fprintf(output_file, "<%%> "); }
 "++"      { fprintf(output_file, "<++> "); }
 "--"      { fprintf(output_file, "<--> "); }
 "&"       { fprintf(output_file, "<&> "); }
@@ -119,6 +192,54 @@ exit      { fprintf(output_file, "<exit> "); }
 "?"       { fprintf(output_file, "<?> "); }
 "#"       { fprintf(output_file, "<#> "); }
 "->"      { fprintf(output_file, "<-> > "); }
+
+(int|float|void)[ ]+{ID}\(.*\) { 
+    char return_type[10], name[100], param_list[100];
+    sscanf(yytext, "%s %[^()]%[^)]", return_type, name, param_list);
+
+    Identifier parameters[10];
+    int param_count = 0;
+
+    char *token = strtok(param_list, ",");
+    while (token != NULL) {
+        char param_id[100], param_type[10];
+        if (sscanf(token, "%9s %99s", param_type, param_id) == 2) {
+            strcpy(parameters[param_count].id, param_id);
+            strcpy(parameters[param_count].type, param_type);
+            param_count++;
+        } else {
+            fprintf(output_file, "<error, invalid_parameter_format> ");
+        }
+        token = strtok(NULL, ",");
+    }
+
+    add_function(name, return_type, param_count, parameters);
+}
+
+
+{ID}\((.*)\) {  
+    char func_name[100], param_list[100];
+    sscanf(yytext, "%[^()](%[^)])", func_name, param_list);
+
+    int func_idx = find_function(func_name);
+    if (func_idx != -1) {
+        fprintf(output_file, "<function_call, %s> ", func_name);
+
+        char passed_params[10][10];
+        int passed_param_count = 0;
+
+        char *token = strtok(param_list, ",");
+        while (token != NULL) {
+            sscanf(token, "%99s", passed_params[passed_param_count]);
+            passed_param_count++;
+            token = strtok(NULL, ",");
+        }
+
+        validate_function_call(&functions[func_idx], passed_param_count, passed_params);
+    } else {
+        fprintf(output_file, "<error, undefined_function, %s> ", func_name);
+    }
+}
 
 (int|float)[ ]+{ID}\[{DIGIT}\] { 
     char var_name[100];
@@ -146,6 +267,7 @@ exit      { fprintf(output_file, "<exit> "); }
 {WHITESPACE}     { /* Ignora espaços em branco */ }
 
 .                { fprintf(output_file, "<invalido, %s> ", yytext); }
+
 %%
 
 int main() {

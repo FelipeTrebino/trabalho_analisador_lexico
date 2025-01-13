@@ -3,6 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+// Arquivo de saída
+FILE *output_file;
+
 // Estrutura para armazenar identificadores na tabela de símbolos
 typedef struct {
     char id[100];
@@ -24,9 +27,6 @@ int identifier_count = 0;
 
 Function functions[100];
 int function_count = 0;
-
-// Arquivo de saída
-FILE *output_file;
 
 // Lista de funções reservadas
 const char *reserved_functions[] = {"printf", "scanf", "exit", "puts", "gets"};
@@ -60,7 +60,7 @@ void process_reserved_function_call(char *func_name, char *param_list) {
     int param_count = 1;
 
     while (token != NULL) {
-        // Verificar se o parâmetro é uma string
+        // Verificar se o parâmetro é uma string (começa com aspas)
         if (token[0] == '"') {
             fprintf(output_file, "<param%d,str,%s> ", param_count, token);
         }
@@ -175,7 +175,6 @@ void validate_function_call(Function *func, int passed_param_count, char passed_
     }
 }
 
-
 // Função para adicionar um vetor na tabela de símbolos
 int add_vector(char *id, char *type, int size) {
     int idx = find_identifier(id);
@@ -192,7 +191,6 @@ int add_vector(char *id, char *type, int size) {
         return -1;
     }
 }
-
 
 %}
 

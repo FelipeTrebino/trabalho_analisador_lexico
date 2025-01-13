@@ -63,6 +63,7 @@ STRING \"(\\.|[^"\\])*\"
 %%
 int       { fprintf(output_file, "<int> "); }
 float     { fprintf(output_file, "<float> "); }
+char      { fprintf(output_file, "<char> "); }
 void      { fprintf(output_file, "<void> "); }
 public    { fprintf(output_file, "<public> "); }
 static    { fprintf(output_file, "<static> "); }
@@ -71,8 +72,18 @@ if        { fprintf(output_file, "<if> "); }
 else      { fprintf(output_file, "<else> "); }
 for       { fprintf(output_file, "<for> "); }
 while     { fprintf(output_file, "<while> "); }
+break     { fprintf(output_file, "<break> "); }
+switch    { fprintf(output_file, "<switch> "); }
+case      { fprintf(output_file, "<case> "); }
+default   { fprintf(output_file, "<default> "); }
+do        { fprintf(output_file, "<do> "); }
+typedef   { fprintf(output_file, "<typedef> "); }
+struct    { fprintf(output_file, "<struct> "); }
 return    { fprintf(output_file, "<return> "); }
-printf    { fprintf(output_file, "<printf> "); }
+printf    { fprintf(output_file, "<printf> "); } 
+scanf     { fprintf(output_file, "<scanf> "); } 
+define    { fprintf(output_file, "<define> "); } 
+exit      { fprintf(output_file, "<exit> "); } 
 "="       { fprintf(output_file, "<= > "); }
 "&&"      { fprintf(output_file, "<&&> "); }
 "||"      { fprintf(output_file, "<||> "); }
@@ -94,6 +105,20 @@ printf    { fprintf(output_file, "<printf> "); }
 "}"       { fprintf(output_file, "<}> "); }
 ","       { fprintf(output_file, "<,> "); }
 ";"       { fprintf(output_file, "<;> "); }
+"%"       { fprintf(output_file, "<%%> "); } 
+"++"      { fprintf(output_file, "<++> "); }
+"--"      { fprintf(output_file, "<--> "); }
+"&"       { fprintf(output_file, "<&> "); }
+"|"       { fprintf(output_file, "<|> "); }
+"~"       { fprintf(output_file, "<~> "); }
+"^"       { fprintf(output_file, "<^> "); }
+"!"       { fprintf(output_file, "<!> "); }
+"+="      { fprintf(output_file, "<+=> "); }
+"-="      { fprintf(output_file, "<-=> "); }
+":"       { fprintf(output_file, "<:> "); }
+"?"       { fprintf(output_file, "<?> "); }
+"#"       { fprintf(output_file, "<#> "); }
+"->"      { fprintf(output_file, "<-> > "); }
 
 (int|float)[ ]+{ID}\[{DIGIT}\] { 
     char var_name[100];

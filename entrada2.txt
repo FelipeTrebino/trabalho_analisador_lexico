@@ -1,6 +1,2 @@
-int main() {
-    int largura = 5, altura = 3, area;
-    area = largura * altura;
-    printf("%d\n",area);
-    return 0;
-}
+int arr[10];
+arr[5];

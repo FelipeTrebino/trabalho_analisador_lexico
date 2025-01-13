@@ -19,14 +19,14 @@ if (a > b) {
 }
 
 // Comando de repetição
-while (x < 20) {
-    x = x + 2;
-    printf("Valor de x: %d\n", x);
+while (z < 20) {
+    z = z + 2;
+    printf("Valor de z: %d\n", z);
 }
 
 // Função com parâmetros e retorno
-float soma(float x, float y) {
-    return x + y;
+float soma(float c, float d) {
+    return c + d;
 }
 
 // Chamando a função
@@ -38,6 +38,3 @@ if (x != a && b >= 3.0) {
     printf("Condição atendida\n");
 }
 
-// String
-char texto[] = "Teste de string";
-printf("%s\n", texto);

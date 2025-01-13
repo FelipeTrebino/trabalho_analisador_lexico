@@ -171,7 +171,7 @@ void validate_function_call(Function *func, int passed_param_count, char passed_
             continue;
         }
 
-        fprintf(output_file, "<param_match, %s -> %s> ", passed_params[i], func->parameters[i].id);
+        fprintf(output_file, "<param_match, %s , %d> ", passed_params[i], i + 1);
     }
 }
 

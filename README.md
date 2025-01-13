@@ -1,11 +1,12 @@
-/*
- * MATA61 - Compiladores
- * Trabalho 1 - Análise Léxica
- * Discentes: Filipe dos Santos Freitas, Pedro Afonso, Felipe Trebino
- * Data: 08/01/2025
- * Descrição: Arquivo Flex que implementa um analisador léxico para reconhecer números, identificadores e operadores aritméticos. O arquivo apenas reconhece símbolos mais comuns, não fomos muito a fundo. Também, há um controle de erro para
- identificadores: se o identificador começar com números, um bloco de ERRO é impresso.
- */
+# MATA61 - Compiladores
+## Trabalho 1 - Análise Léxica
+
+**Discentes:** Filipe dos Santos Freitas, Pedro Afonso, Felipe Trebino  
+**Data:** 08/01/2025  
+
+**Descrição:** Arquivo Flex que implementa um analisador léxico para reconhecer números, identificadores e operadores aritméticos. O arquivo apenas reconhece símbolos mais comuns, não fomos muito a fundo. Também, há um controle de erro para identificadores: se o identificador começar com números, um bloco de ERRO é impresso.
+
+---
 
 # Analisador Léxico em Flex
 

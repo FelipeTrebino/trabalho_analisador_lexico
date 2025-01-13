@@ -1,0 +1,4 @@
+
+*.lex
+*.out
+lex.yy.c

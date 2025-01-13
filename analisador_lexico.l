@@ -13,6 +13,9 @@ typedef struct {
 Identifier identifiers[100];
 int identifier_count = 0;
 
+// Arquivo de saída
+FILE *output_file;
+
 // Função para encontrar um identificador na tabela de símbolos
 int find_identifier(char *id) {
     for (int i = 0; i < identifier_count; i++) {
@@ -31,9 +34,9 @@ void add_variable(char *id, char *type) {
         strcpy(identifiers[identifier_count].type, type);
         identifiers[identifier_count].size = 0;
         identifier_count++;
-        printf("<id, %d> ", identifier_count);
+        fprintf(output_file, "<id, %d> ", identifier_count);
     } else {
-        printf("<id, %d> ", idx + 1);
+        fprintf(output_file, "<id, %d> ", idx + 1);
     }
 }
 
@@ -44,7 +47,7 @@ void add_vector(char *id, char *type, int size) {
         strcpy(identifiers[identifier_count].type, type);
         identifiers[identifier_count].size = size;
         identifier_count++;
-        printf("<vetor_decl, %s, %d> ", id, size);
+        fprintf(output_file, "<vetor_decl, %s, %d> ", id, size);
     }
 }
 %}
@@ -58,45 +61,44 @@ STRING \"(\\.|[^"\\])*\"
 %option noyywrap
 
 %%
-int       { printf("<int> "); }
-float     { printf("<float> "); }
-void      { printf("<void> "); }
-public    { printf("<public> "); }
-static    { printf("<static> "); }
-args      { printf("<args> "); }
-if        { printf("<if> "); }
-else      { printf("<else> "); }
-for       { printf("<for> "); }
-while     { printf("<while> "); }
-return    { printf("<return> "); }
-printf    { printf("<printf> "); }
-"="       { printf("<= > "); }
-"&&"       { printf("<&&> "); }
-"||"       { printf("<||> "); }
-"=="      { printf("<==> "); }
-"<"       { printf("<< > "); }
-"<="      { printf("<<= > "); }
-">"       { printf("<> > "); }
-">="      { printf("<>= > "); }
-"!="      { printf("<!= > "); }
-"+"       { printf("<+> "); }
-"-"       { printf("<-> "); }
-"*"       { printf("<*> "); }
-"/"       { printf("</> "); }
-"("       { printf("<(> "); }
-")"       { printf("<)> "); }
-"["       { printf("<[> "); }
-"]"       { printf("<]> "); }
-"{"       { printf("<{> "); }
-"}"       { printf("<}> "); }
-","       { printf("<,> "); }
-";"       { printf("<;> "); }
-
+int       { fprintf(output_file, "<int> "); }
+float     { fprintf(output_file, "<float> "); }
+void      { fprintf(output_file, "<void> "); }
+public    { fprintf(output_file, "<public> "); }
+static    { fprintf(output_file, "<static> "); }
+args      { fprintf(output_file, "<args> "); }
+if        { fprintf(output_file, "<if> "); }
+else      { fprintf(output_file, "<else> "); }
+for       { fprintf(output_file, "<for> "); }
+while     { fprintf(output_file, "<while> "); }
+return    { fprintf(output_file, "<return> "); }
+printf    { fprintf(output_file, "<printf> "); }
+"="       { fprintf(output_file, "<= > "); }
+"&&"      { fprintf(output_file, "<&&> "); }
+"||"      { fprintf(output_file, "<||> "); }
+"=="      { fprintf(output_file, "<==> "); }
+"<"       { fprintf(output_file, "<< > "); }
+"<="      { fprintf(output_file, "<<= > "); }
+">"       { fprintf(output_file, "<> > "); }
+">="      { fprintf(output_file, "<>= > "); }
+"!="      { fprintf(output_file, "<!= > "); }
+"+"       { fprintf(output_file, "<+> "); }
+"-"       { fprintf(output_file, "<-> "); }
+"*"       { fprintf(output_file, "<*> "); }
+"/"       { fprintf(output_file, "</> "); }
+"("       { fprintf(output_file, "<(> "); }
+")"       { fprintf(output_file, "<)> "); }
+"["       { fprintf(output_file, "<[> "); }
+"]"       { fprintf(output_file, "<]> "); }
+"{"       { fprintf(output_file, "<{> "); }
+"}"       { fprintf(output_file, "<}> "); }
+","       { fprintf(output_file, "<,> "); }
+";"       { fprintf(output_file, "<;> "); }
 
 (int|float)[ ]+{ID}\[{DIGIT}\] { 
     char var_name[100];
     int size;
-    printf("<int> "); 
+    fprintf(output_file, "<int> "); 
     sscanf(yytext, "%*s %[^[[][%d]", var_name, &size);
     add_vector(var_name, "vetor", size);
 }
@@ -105,23 +107,34 @@ printf    { printf("<printf> "); }
     char var_name[100];
     int index;
     sscanf(yytext, "%[^[[][%d]", var_name, &index);
-    printf("<vetor_acesso, %s, %d> ", var_name, index);
+    fprintf(output_file, "<vetor_acesso, %s, %d> ", var_name, index);
 }
 
-{DIGIT}          { printf("<num, %s> ", yytext); }
-{FLOAT}          { printf("<num, %s> ", yytext); }
+{DIGIT}          { fprintf(output_file, "<num, %s> ", yytext); }
+{FLOAT}          { fprintf(output_file, "<num, %s> ", yytext); }
 {ID}             { add_variable(yytext, "unknown"); }
-{STRING}         { printf("<str, %s> ", yytext); }
+{STRING}         { fprintf(output_file, "<str, %s> ", yytext); }
 
 "//".*           { /* Ignora comentários de linha única */ }
 "/*"([^*]|\*+[^*/])*\*+"/" { /* Ignora comentários de múltiplas linhas */ }
 
 {WHITESPACE}     { /* Ignora espaços em branco */ }
 
-.                { printf("<invalido, %s> ", yytext); }
+.                { fprintf(output_file, "<invalido, %s> ", yytext); }
 %%
 
 int main() {
+    // Abre o arquivo de saída
+    output_file = fopen("output.lex", "w");
+    if (!output_file) {
+        printf("Erro ao abrir o arquivo de saída.\n");
+        return 1;
+    }
+
+    // Executa o analisador léxico
     yylex();
+
+    // Fecha o arquivo de saída
+    fclose(output_file);
     return 0;
 }

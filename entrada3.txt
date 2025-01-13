@@ -1,6 +1,7 @@
-int main() {
-    int a = 10;
-    float b = 3.14;
-    int vetorn[5] = {1, 2, 3, 4, 5};
-    vetorn[2] = 10;
+// Função com parâmetros e retorno
+float soma(float x, float y) {
+    return x + y;
 }
+
+// Chamando a função
+float resultado = soma(1.5, 2.5);

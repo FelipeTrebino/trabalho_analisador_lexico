@@ -27,7 +27,7 @@ int find_identifier(char *id) {
 
 
 // Função para adicionar uma variável simples na tabela de símbolos
-void add_variable(char *id, char *type) {
+void add_identifier(char *id, char *type) {
     int idx = find_identifier(id);
     if (idx == -1) {
         strcpy(identifiers[identifier_count].id, id);
@@ -110,7 +110,7 @@ return    { fprintf(output_file, "<return> "); }
 
 {DIGIT}          { fprintf(output_file, "<num, %s> ", yytext); }
 {FLOAT}          { fprintf(output_file, "<num, %s> ", yytext); }
-{ID}             { add_variable(yytext, "unknown"); }
+{ID}             { add_identifier(yytext, "unknown"); }
 {STRING}         { fprintf(output_file, "<str, %s> ", yytext); }
 "//".*           { /* Ignora comentários de linha única */ }
 "/*"([^*]|\*+[^*/])*\*+"/" { /* Ignora comentários de múltiplas linhas */ }

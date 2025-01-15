@@ -292,9 +292,11 @@ printf("Resultado da soma: %.2f
 ```
 <float> <id, 1> <= > <id, 2> <(> <num, 1.5> <,> <num, 2.5> <)> <;> <printf> <(> <str, "Resultado da soma: %.2f"> <,> <id, 1> <)> <;> 
 ```
+
 ---
+ Obs:O analisador utiliza a função yylex() para processar a entrada. Cada token identificado gera uma saída apropriada ou é marcado como inválido. Colocamos a diretiva "%option noyywrap" para não ter que utilizar a função "yywrap()" e ter que retornar 1 como o fim do processamento.
 
-
- O analisador utiliza a função yylex() para processar a entrada. Cada token identificado gera uma saída apropriada ou é marcado como inválido. Colocamos a diretiva "%option noyywrap" para não ter que utilizar a função "yywrap()" e ter que retornar 1 como o fim do processamento.
-
+---
+# Diagrama de transições
+![Diagrama de transição](diag_transicao.png)
 
